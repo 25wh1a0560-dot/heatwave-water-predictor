@@ -1,0 +1,41 @@
+/* ================= WHY THIS AREA ================= */
+
+.why-section {
+    margin-top: 20px;
+    padding: 18px;
+    background: #f5f8fb;
+    border-radius: 12px;
+}
+
+.why-section h3 {
+    font-size: 17px;
+    margin-bottom: 10px;
+}
+
+.why-section p {
+    color: #667085;
+    font-size: 13px;
+    line-height: 1.5;
+    margin-bottom: 12px;
+}
+
+.why-factor {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 9px 0;
+    border-bottom: 1px solid #e3e8ee;
+    font-size: 13px;
+}
+
+.why-factor:last-child {
+    border-bottom: none;
+}
+
+.why-factor span {
+    color: #667085;
+}
+
+.why-factor strong {
+    color: #172033;
+}

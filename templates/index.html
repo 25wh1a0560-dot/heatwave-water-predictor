@@ -1,0 +1,2572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Heatwave Water Demand Predictor</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+body{
+    font-family:Arial,Helvetica,sans-serif;
+    background:#f4f7fb;
+    color:#172033;
+}
+
+header{
+    background:linear-gradient(135deg,#172554,#2563eb);
+    color:white;
+    padding:28px 6%;
+}
+
+header h1{
+    font-size:30px;
+    margin-bottom:8px;
+}
+
+header p{
+    font-size:15px;
+    opacity:.9;
+}
+
+.container{
+    width:88%;
+    max-width:1400px;
+    margin:30px auto;
+}
+
+/* ================= CONTROL ================= */
+
+.control-panel{
+    background:white;
+    padding:25px;
+    border-radius:16px;
+    box-shadow:0 5px 20px rgba(0,0,0,.07);
+    margin-bottom:25px;
+}
+
+.control-panel h2{
+    margin-bottom:8px;
+}
+
+.control-panel p{
+    color:#667085;
+    margin-bottom:22px;
+}
+
+.input-grid{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:15px;
+}
+
+.input-group{
+    display:flex;
+    flex-direction:column;
+}
+
+.input-group label,
+.whatif-input-group label,
+.tanker-input-group label{
+    font-size:13px;
+    font-weight:bold;
+    margin-bottom:7px;
+}
+
+.input-group input,
+.input-group select,
+.whatif-input-group input,
+.tanker-input-group input{
+    padding:11px;
+    border:1px solid #d0d5dd;
+    border-radius:8px;
+    font-size:14px;
+}
+
+.analyze-btn{
+    margin-top:20px;
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:9px;
+    background:#2563eb;
+    color:white;
+    font-size:16px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.analyze-btn:hover{
+    background:#1d4ed8;
+}
+
+/* ================= SUMMARY ================= */
+
+.summary-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:18px;
+    margin-bottom:25px;
+}
+
+.summary-card{
+    background:white;
+    padding:22px;
+    border-radius:14px;
+    box-shadow:0 5px 15px rgba(0,0,0,.06);
+}
+
+.summary-card span{
+    display:block;
+    color:#667085;
+    font-size:13px;
+    margin-bottom:8px;
+}
+
+.summary-card strong{
+    font-size:28px;
+}
+
+.high-number{color:#dc2626}
+.medium-number{color:#ea580c}
+.low-number{color:#16a34a}
+
+/* ================= HOW IT WORKS ================= */
+
+.architecture-panel{
+    background:white;
+    padding:25px;
+    border-radius:16px;
+    margin-bottom:25px;
+    box-shadow:0 5px 20px rgba(0,0,0,.06);
+}
+
+.architecture-panel h2{
+    margin-bottom:8px;
+}
+
+.architecture-panel>p{
+    color:#667085;
+    font-size:14px;
+    line-height:1.5;
+    margin-bottom:25px;
+}
+
+.architecture-flow{
+    display:grid;
+    grid-template-columns:repeat(7,1fr);
+    gap:8px;
+    align-items:center;
+}
+
+.architecture-box{
+    min-height:105px;
+    padding:15px 8px;
+    background:#f8fafc;
+    border:1px solid #dbeafe;
+    border-radius:12px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    transition:.2s;
+}
+
+.architecture-box:hover{
+    transform:translateY(-3px);
+    box-shadow:0 6px 15px rgba(37,99,235,.12);
+}
+
+.architecture-icon{
+    font-size:28px;
+    margin-bottom:8px;
+}
+
+.architecture-box strong{
+    font-size:12px;
+    line-height:1.3;
+}
+
+.architecture-arrow{
+    text-align:center;
+    font-size:22px;
+    color:#2563eb;
+    font-weight:bold;
+}
+
+.architecture-note{
+    margin-top:20px;
+    padding:13px 15px;
+    background:#eff6ff;
+    border-radius:9px;
+    color:#1e40af;
+    font-size:12px;
+    line-height:1.5;
+}
+
+/* ================= COMMON SECTION ================= */
+
+.dashboard-section{
+    background:white;
+    padding:25px;
+    border-radius:16px;
+    margin-bottom:25px;
+    box-shadow:0 5px 20px rgba(0,0,0,.06);
+}
+
+.dashboard-section h2{
+    margin-bottom:8px;
+}
+
+.dashboard-section>p{
+    color:#667085;
+    margin-bottom:20px;
+    font-size:14px;
+}
+
+/* ================= WHAT IF ================= */
+
+.whatif-panel{
+    background:linear-gradient(135deg,#f5f3ff,#eff6ff);
+    padding:25px;
+    border-radius:16px;
+    margin-bottom:25px;
+    border:1px solid #ddd6fe;
+}
+
+.whatif-header h2{
+    margin-bottom:8px;
+}
+
+.whatif-header p{
+    color:#667085;
+    font-size:14px;
+    line-height:1.5;
+    margin-bottom:20px;
+}
+
+.scenario-label{
+    font-size:13px;
+    font-weight:bold;
+    margin-bottom:12px;
+    color:#3730a3;
+}
+
+.whatif-input-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:15px;
+}
+
+.whatif-input-group{
+    display:flex;
+    flex-direction:column;
+}
+
+.whatif-input-group input{
+    border-color:#c7d2fe;
+    background:white;
+}
+
+.whatif-btn{
+    width:100%;
+    margin-top:18px;
+    padding:13px;
+    border:none;
+    border-radius:9px;
+    background:#7c3aed;
+    color:white;
+    font-size:15px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.whatif-btn:hover{
+    background:#6d28d9;
+}
+
+.whatif-btn:disabled{
+    opacity:.7;
+}
+
+.whatif-result{
+    display:none;
+    margin-top:25px;
+}
+
+.scenario-comparison{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:18px;
+    margin-bottom:20px;
+}
+
+.scenario-card{
+    background:white;
+    border-radius:12px;
+    padding:18px;
+    border:1px solid #e5e7eb;
+}
+
+.scenario-card h3{
+    margin-bottom:8px;
+}
+
+.scenario-weather{
+    color:#667085;
+    font-size:12px;
+    margin-bottom:15px;
+}
+
+.scenario-risk-row{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:8px;
+}
+
+.scenario-risk-box{
+    padding:13px 8px;
+    border-radius:9px;
+    text-align:center;
+}
+
+.scenario-risk-box span{
+    display:block;
+    font-size:11px;
+    color:#667085;
+    margin-bottom:5px;
+}
+
+.scenario-risk-box strong{
+    font-size:23px;
+}
+
+.scenario-high{background:#fef2f2}
+.scenario-high strong{color:#dc2626}
+
+.scenario-medium{background:#fff7ed}
+.scenario-medium strong{color:#ea580c}
+
+.scenario-low{background:#f0fdf4}
+.scenario-low strong{color:#16a34a}
+
+.whatif-change{
+    background:white;
+    padding:20px;
+    border-radius:12px;
+    border-left:5px solid #7c3aed;
+    margin-bottom:15px;
+}
+
+.whatif-change h3{
+    margin-bottom:8px;
+}
+
+.whatif-change p{
+    color:#475467;
+    font-size:14px;
+    line-height:1.5;
+}
+
+.change-positive{
+    color:#dc2626;
+    font-weight:bold;
+}
+
+.change-negative{
+    color:#16a34a;
+    font-weight:bold;
+}
+
+.change-neutral{
+    color:#475467;
+    font-weight:bold;
+}
+
+.whatif-note{
+    padding:12px;
+    background:#faf5ff;
+    color:#6b21a8;
+    border-radius:8px;
+    font-size:12px;
+}
+
+/* ================= RISK MAP ================= */
+
+.risk-legend{
+    display:flex;
+    gap:20px;
+    margin-bottom:18px;
+    flex-wrap:wrap;
+}
+
+.legend-item{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    font-size:13px;
+    font-weight:bold;
+}
+
+.legend-dot{
+    width:14px;
+    height:14px;
+    border-radius:50%;
+}
+
+.red-dot{background:#ef4444}
+.orange-dot{background:#f97316}
+.green-dot{background:#22c55e}
+
+.risk-grid{
+    display:grid;
+    grid-template-columns:repeat(8,1fr);
+    gap:7px;
+}
+
+.risk-cell{
+    padding:11px 5px;
+    border-radius:8px;
+    text-align:center;
+    color:white;
+    font-size:10px;
+    font-weight:bold;
+    cursor:pointer;
+    min-height:52px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.risk-cell:hover{
+    transform:translateY(-2px);
+    opacity:.88;
+}
+
+.risk-high{background:#ef4444}
+.risk-medium{background:#f97316}
+.risk-low{background:#22c55e}
+
+.map-note{
+    margin-top:15px;
+    padding:12px;
+    background:#f8fafc;
+    border-radius:8px;
+    color:#667085;
+    font-size:12px;
+}
+
+/* ================= PRIORITY ================= */
+
+.priority-list{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+.priority-item{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:15px;
+    background:#f8fafc;
+    border-radius:10px;
+    border-left:5px solid #ef4444;
+    cursor:pointer;
+}
+
+.priority-name{
+    font-weight:bold;
+}
+
+.priority-increase{
+    color:#dc2626;
+    font-weight:bold;
+}
+
+/* ================= TANKERS ================= */
+
+.tanker-panel{
+    background:linear-gradient(135deg,#eff6ff,#f8fafc);
+    padding:25px;
+    border-radius:16px;
+    margin-bottom:25px;
+    border:1px solid #dbeafe;
+}
+
+.tanker-header h2{
+    margin-bottom:8px;
+}
+
+.tanker-header p{
+    color:#667085;
+    font-size:14px;
+    margin-bottom:20px;
+}
+
+.tanker-controls{
+    display:flex;
+    gap:12px;
+    align-items:end;
+}
+
+.tanker-input-group{
+    display:flex;
+    flex-direction:column;
+    width:250px;
+}
+
+.tanker-btn{
+    padding:12px 20px;
+    border:none;
+    border-radius:8px;
+    background:#2563eb;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.tanker-btn:hover{
+    background:#1d4ed8;
+}
+
+.tanker-result{
+    display:none;
+    margin-top:25px;
+}
+
+.tanker-summary{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:15px;
+    margin-bottom:20px;
+}
+
+.tanker-summary-card{
+    background:white;
+    padding:18px;
+    border-radius:10px;
+    text-align:center;
+}
+
+.tanker-summary-card span{
+    display:block;
+    font-size:12px;
+    color:#667085;
+    margin-bottom:6px;
+}
+
+.tanker-summary-card strong{
+    font-size:25px;
+}
+
+.tanker-table-wrapper{
+    overflow-x:auto;
+}
+
+.tanker-table{
+    width:100%;
+    border-collapse:collapse;
+    background:white;
+    border-radius:10px;
+    overflow:hidden;
+}
+
+.tanker-table th,
+.tanker-table td{
+    padding:12px;
+    text-align:left;
+    border-bottom:1px solid #e5e7eb;
+    font-size:13px;
+}
+
+.tanker-table th{
+    background:#172554;
+    color:white;
+}
+
+.table-high{
+    color:#dc2626;
+    font-weight:bold;
+}
+
+.table-medium{
+    color:#ea580c;
+    font-weight:bold;
+}
+
+.table-low{
+    color:#16a34a;
+    font-weight:bold;
+}
+
+.tanker-count{
+    font-weight:bold;
+    color:#2563eb;
+}
+
+.tanker-note{
+    margin-top:15px;
+    padding:12px;
+    background:#fff7ed;
+    color:#9a3412;
+    border-radius:8px;
+    font-size:12px;
+}
+
+/* ================= AREA ================= */
+
+.area-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:18px;
+}
+
+.area-card{
+    background:white;
+    border:1px solid #e5e7eb;
+    border-radius:13px;
+    padding:18px;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.area-card:hover{
+    transform:translateY(-3px);
+    box-shadow:0 7px 20px rgba(0,0,0,.08);
+}
+
+.area-card-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:start;
+    gap:10px;
+    margin-bottom:15px;
+}
+
+.area-name{
+    font-weight:bold;
+    font-size:15px;
+}
+
+.risk-badge{
+    padding:5px 8px;
+    border-radius:20px;
+    color:white;
+    font-size:10px;
+    font-weight:bold;
+}
+
+.badge-high{background:#ef4444}
+.badge-medium{background:#f97316}
+.badge-low{background:#22c55e}
+
+.area-metric{
+    display:flex;
+    justify-content:space-between;
+    padding:7px 0;
+    border-bottom:1px solid #f1f5f9;
+    font-size:13px;
+}
+
+.area-metric span{
+    color:#667085;
+}
+
+/* ================= ACTION ================= */
+
+.action-panel{
+    padding:20px;
+    background:#ecfdf5;
+    border-left:5px solid #22c55e;
+    border-radius:10px;
+}
+
+.action-panel h3{
+    margin-bottom:8px;
+}
+
+.action-panel p{
+    color:#166534;
+}
+
+/* ================= MODAL ================= */
+
+.modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.55);
+    z-index:1000;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+}
+
+.modal-content{
+    width:100%;
+    max-width:600px;
+    max-height:90vh;
+    overflow-y:auto;
+    background:white;
+    border-radius:16px;
+    padding:25px;
+    position:relative;
+}
+
+.close-btn{
+    position:absolute;
+    right:18px;
+    top:15px;
+    border:none;
+    background:none;
+    font-size:25px;
+    cursor:pointer;
+}
+
+.modal-title{
+    font-size:23px;
+    margin-bottom:18px;
+    padding-right:35px;
+}
+
+.modal-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;
+}
+
+.modal-stat{
+    background:#f8fafc;
+    padding:14px;
+    border-radius:10px;
+}
+
+.modal-stat span{
+    display:block;
+    font-size:12px;
+    color:#667085;
+    margin-bottom:5px;
+}
+
+.modal-stat strong{
+    font-size:17px;
+}
+
+.why-section{
+    margin-top:20px;
+    padding:18px;
+    background:#f5f8fb;
+    border-radius:12px;
+}
+
+.why-section h3{
+    font-size:17px;
+    margin-bottom:10px;
+}
+
+.why-section p{
+    color:#667085;
+    font-size:13px;
+    line-height:1.5;
+    margin-bottom:12px;
+}
+
+.why-factor{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:9px 0;
+    border-bottom:1px solid #e3e8ee;
+    font-size:13px;
+}
+
+.why-factor span{
+    color:#667085;
+}
+
+.modal-action{
+    margin-top:20px;
+    padding:16px;
+    background:#eff6ff;
+    border-radius:10px;
+    color:#1e40af;
+}
+
+/* ================= HIDDEN ================= */
+
+#resultsSection{
+    display:none;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:1000px){
+
+    .input-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .summary-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .area-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .risk-grid{
+        grid-template-columns:repeat(5,1fr);
+    }
+
+    .whatif-input-grid{
+        grid-template-columns:1fr;
+    }
+
+    .architecture-flow{
+        grid-template-columns:repeat(4,1fr);
+    }
+
+    .architecture-arrow{
+        display:none;
+    }
+}
+
+@media(max-width:650px){
+
+    header h1{
+        font-size:23px;
+    }
+
+    .container{
+        width:94%;
+    }
+
+    .input-grid,
+    .summary-grid,
+    .area-grid,
+    .tanker-summary{
+        grid-template-columns:1fr;
+    }
+
+    .risk-grid{
+        grid-template-columns:repeat(3,1fr);
+    }
+
+    .tanker-controls{
+        flex-direction:column;
+        align-items:stretch;
+    }
+
+    .tanker-input-group{
+        width:100%;
+    }
+
+    .modal-grid{
+        grid-template-columns:1fr;
+    }
+
+    .scenario-comparison{
+        grid-template-columns:1fr;
+    }
+
+    .architecture-flow{
+        grid-template-columns:repeat(2,1fr);
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+
+<h1>🌡️ Heatwave Water Demand Predictor</h1>
+
+<p>
+Predict area-level water demand pressure and help authorities
+prepare before heatwave-driven shortages occur.
+</p>
+
+</header>
+
+
+<div class="container">
+
+<!-- ================= CONTROLS ================= -->
+
+<div class="control-panel">
+
+<h2>🔥 Heatwave Demand Scenario</h2>
+
+<p>
+Enter the expected weather conditions to estimate water-demand
+pressure across Hyderabad areas.
+</p>
+
+<div class="input-grid">
+
+<div class="input-group">
+<label>Average Temperature (°C)</label>
+<input type="number" id="avg_temperature" value="34" step="0.1">
+</div>
+
+<div class="input-group">
+<label>Maximum Temperature (°C)</label>
+<input type="number" id="max_temperature" value="44" step="0.1">
+</div>
+
+<div class="input-group">
+<label>Humidity (%)</label>
+<input type="number" id="humidity" value="35" step="1">
+</div>
+
+<div class="input-group">
+<label>Rainfall (mm)</label>
+<input type="number" id="rainfall" value="0" step="0.1">
+</div>
+
+<div class="input-group">
+
+<label>Month</label>
+
+<select id="month">
+<option value="1">January</option>
+<option value="2">February</option>
+<option value="3">March</option>
+<option value="4">April</option>
+<option value="5">May</option>
+<option value="6">June</option>
+<option value="7">July</option>
+<option value="8">August</option>
+<option value="9">September</option>
+<option value="10">October</option>
+<option value="11">November</option>
+<option value="12">December</option>
+</select>
+
+</div>
+
+</div>
+
+<button class="analyze-btn" onclick="analyzeDemand()">
+🔍 Analyze Water Demand Risk
+</button>
+
+</div>
+
+
+<!-- ================= RESULTS ================= -->
+
+<div id="resultsSection">
+
+
+<!-- ================= SUMMARY ================= -->
+
+<div class="summary-grid">
+
+<div class="summary-card">
+<span>Areas Analyzed</span>
+<strong id="totalAreas">0</strong>
+</div>
+
+<div class="summary-card">
+<span>🔴 High Risk</span>
+<strong id="highRiskCount" class="high-number">0</strong>
+</div>
+
+<div class="summary-card">
+<span>🟠 Medium Risk</span>
+<strong id="mediumRiskCount" class="medium-number">0</strong>
+</div>
+
+<div class="summary-card">
+<span>🟢 Low Risk</span>
+<strong id="lowRiskCount" class="low-number">0</strong>
+</div>
+
+</div>
+
+
+<!-- ================= HOW IT WORKS ================= -->
+
+<div class="architecture-panel">
+
+<h2>🏗️ How It Works</h2>
+
+<p>
+The system combines historical water-demand data with forecast
+weather conditions to identify areas that may experience higher
+water-demand pressure during heatwaves.
+</p>
+
+<div class="architecture-flow">
+
+<div class="architecture-box">
+<div class="architecture-icon">🌦️</div>
+<strong>Weather Input</strong>
+</div>
+
+<div class="architecture-arrow">→</div>
+
+<div class="architecture-box">
+<div class="architecture-icon">💧</div>
+<strong>Historical Water Data</strong>
+</div>
+
+<div class="architecture-arrow">→</div>
+
+<div class="architecture-box">
+<div class="architecture-icon">🔥</div>
+<strong>Heat Stress Calculation</strong>
+</div>
+
+<div class="architecture-arrow">→</div>
+
+<div class="architecture-box">
+<div class="architecture-icon">📊</div>
+<strong>Area-Level Demand Prediction</strong>
+</div>
+
+<div class="architecture-arrow">→</div>
+
+<div class="architecture-box">
+<div class="architecture-icon">🚨</div>
+<strong>Risk Classification</strong>
+</div>
+
+<div class="architecture-arrow">→</div>
+
+<div class="architecture-box">
+<div class="architecture-icon">🚚</div>
+<strong>Tanker Allocation</strong>
+</div>
+
+<div class="architecture-arrow">→</div>
+
+<div class="architecture-box">
+<div class="architecture-icon">🏛️</div>
+<strong>Authority Action</strong>
+</div>
+
+</div>
+
+<div class="architecture-note">
+
+💡 <strong>Decision-support approach:</strong>
+The system converts heatwave conditions into area-level risk
+and operational recommendations so authorities can prepare
+resources in advance.
+
+</div>
+
+</div>
+
+
+<!-- ================= WHAT IF ================= -->
+
+<div class="whatif-panel">
+
+<div class="whatif-header">
+
+<h2>🔮 What-If Heatwave Scenario</h2>
+
+<p>
+Test a different weather scenario and see how the number of
+high, medium and low-risk areas could change. This helps
+authorities compare possible heatwave conditions before
+making supply decisions.
+</p>
+
+</div>
+
+<div class="scenario-label">
+Enter an alternate heatwave scenario
+</div>
+
+<div class="whatif-input-grid">
+
+<div class="whatif-input-group">
+
+<label>Maximum Temperature (°C)</label>
+
+<input
+type="number"
+id="whatif_max_temperature"
+value="44"
+step="0.1">
+
+</div>
+
+<div class="whatif-input-group">
+
+<label>Humidity (%)</label>
+
+<input
+type="number"
+id="whatif_humidity"
+value="35"
+step="1">
+
+</div>
+
+<div class="whatif-input-group">
+
+<label>Rainfall (mm)</label>
+
+<input
+type="number"
+id="whatif_rainfall"
+value="0"
+step="0.1">
+
+</div>
+
+</div>
+
+<button
+class="whatif-btn"
+id="whatifButton"
+onclick="compareWhatIfScenario()">
+
+🔮 Compare What-If Scenario
+
+</button>
+
+
+<div class="whatif-result" id="whatifResult">
+
+<div class="scenario-comparison">
+
+<div class="scenario-card">
+
+<h3>📌 Current Scenario</h3>
+
+<div class="scenario-weather" id="currentScenarioWeather">
+-
+</div>
+
+<div class="scenario-risk-row">
+
+<div class="scenario-risk-box scenario-high">
+<span>HIGH</span>
+<strong id="currentHigh">0</strong>
+</div>
+
+<div class="scenario-risk-box scenario-medium">
+<span>MEDIUM</span>
+<strong id="currentMedium">0</strong>
+</div>
+
+<div class="scenario-risk-box scenario-low">
+<span>LOW</span>
+<strong id="currentLow">0</strong>
+</div>
+
+</div>
+
+</div>
+
+
+<div class="scenario-card">
+
+<h3>🔮 What-If Scenario</h3>
+
+<div class="scenario-weather" id="whatifScenarioWeather">
+-
+</div>
+
+<div class="scenario-risk-row">
+
+<div class="scenario-risk-box scenario-high">
+<span>HIGH</span>
+<strong id="whatifHigh">0</strong>
+</div>
+
+<div class="scenario-risk-box scenario-medium">
+<span>MEDIUM</span>
+<strong id="whatifMedium">0</strong>
+</div>
+
+<div class="scenario-risk-box scenario-low">
+<span>LOW</span>
+<strong id="whatifLow">0</strong>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<div class="whatif-change">
+
+<h3>📈 Scenario Impact</h3>
+
+<p id="whatifChangeText">-</p>
+
+</div>
+
+<div class="whatif-note">
+
+ℹ️ This is a scenario comparison using the same demand
+model. It helps with planning decisions and should not be
+interpreted as a guaranteed future outcome.
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- ================= RISK MAP ================= -->
+
+<div class="dashboard-section">
+
+<h2>🗺️ Hyderabad Water Demand Risk Map</h2>
+
+<p>
+Operational risk grid showing predicted water-demand pressure
+across analyzed areas.
+</p>
+
+<div class="risk-legend">
+
+<div class="legend-item">
+<div class="legend-dot red-dot"></div>
+HIGH
+</div>
+
+<div class="legend-item">
+<div class="legend-dot orange-dot"></div>
+MEDIUM
+</div>
+
+<div class="legend-item">
+<div class="legend-dot green-dot"></div>
+LOW
+</div>
+
+</div>
+
+<div class="risk-grid" id="riskGrid"></div>
+
+<div class="map-note">
+ℹ️ This is an operational risk grid, not a geographic
+boundary map. Click an area to see its prediction details.
+</div>
+
+</div>
+
+
+<!-- ================= PRIORITY ================= -->
+
+<div class="dashboard-section">
+
+<h2>🚨 Priority Areas</h2>
+
+<p>
+Areas with the greatest predicted heat-related water demand
+pressure.
+</p>
+
+<div class="priority-list" id="priorityList"></div>
+
+</div>
+
+
+<!-- ================= TANKERS ================= -->
+
+<div class="tanker-panel">
+
+<div class="tanker-header">
+
+<h2>🚚 Emergency Tanker Allocation</h2>
+
+<p>
+Enter the number of tankers currently available. The system
+prioritizes areas according to predicted heat-related water
+demand pressure.
+</p>
+
+</div>
+
+<div class="tanker-controls">
+
+<div class="tanker-input-group">
+
+<label>Available Tankers</label>
+
+<input
+type="number"
+id="tankerCount"
+value="20"
+min="1"
+step="1">
+
+</div>
+
+<button
+class="tanker-btn"
+onclick="allocateTankers()">
+
+🚚 Allocate Tankers
+
+</button>
+
+</div>
+
+
+<div class="tanker-result" id="tankerResult">
+
+<div class="tanker-summary">
+
+<div class="tanker-summary-card">
+<span>Available Tankers</span>
+<strong id="availableTankerSummary">0</strong>
+</div>
+
+<div class="tanker-summary-card">
+<span>Areas Prioritized</span>
+<strong id="prioritizedAreaSummary">0</strong>
+</div>
+
+<div class="tanker-summary-card">
+<span>Tankers Allocated</span>
+<strong id="allocatedTankerSummary">0</strong>
+</div>
+
+</div>
+
+
+<div class="tanker-table-wrapper">
+
+<table class="tanker-table">
+
+<thead>
+
+<tr>
+<th>Priority</th>
+<th>Area</th>
+<th>Risk</th>
+<th>Expected Increase</th>
+<th>Tankers</th>
+</tr>
+
+</thead>
+
+<tbody id="tankerTableBody"></tbody>
+
+</table>
+
+</div>
+
+<div class="tanker-note">
+
+⚠️ Tanker allocation is a decision-support recommendation
+based on predicted demand pressure. It does not represent
+an exact litres-per-tanker requirement.
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- ================= AREA FORECAST ================= -->
+
+<div class="dashboard-section">
+
+<h2>📊 Area-wise Forecast</h2>
+
+<p>
+Click any area to view detailed prediction and explainability.
+</p>
+
+<div class="area-grid" id="areaGrid"></div>
+
+</div>
+
+
+<!-- ================= ACTION ================= -->
+
+<div class="dashboard-section">
+
+<h2>🚨 Recommended Authority Action</h2>
+
+<div class="action-panel">
+
+<h3>Prepare water supply before demand peaks.</h3>
+
+<p>
+Prioritize high-risk areas for water tanker deployment and
+temporary drinking-water stations. Medium-risk areas should
+be monitored closely.
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- ================= MODAL ================= -->
+
+<div class="modal" id="areaModal" onclick="closeModalOutside(event)">
+
+<div class="modal-content" onclick="event.stopPropagation()">
+
+<button class="close-btn" onclick="closeModal()">×</button>
+
+<h2 class="modal-title" id="modalTitle">
+Area Details
+</h2>
+
+<div class="modal-grid">
+
+<div class="modal-stat">
+<span>Risk Level</span>
+<strong id="modalRisk">-</strong>
+</div>
+
+<div class="modal-stat">
+<span>Current Demand</span>
+<strong id="modalCurrent">-</strong>
+</div>
+
+<div class="modal-stat">
+<span>Predicted Demand</span>
+<strong id="modalPredicted">-</strong>
+</div>
+
+<div class="modal-stat">
+<span>Expected Increase</span>
+<strong id="modalIncrease">-</strong>
+</div>
+
+<div class="modal-stat">
+<span>Heat Stress</span>
+<strong id="modalStress">-</strong>
+</div>
+
+<div class="modal-stat">
+<span>Heat Sensitivity</span>
+<strong id="modalSensitivity">-</strong>
+</div>
+
+</div>
+
+
+<div class="why-section">
+
+<h3>
+🔍 Why is this area
+<span id="modalWhyRisk">-</span>
+risk?
+</h3>
+
+<p id="modalWhyText">
+The forecast heat conditions create water-demand pressure
+in this area.
+</p>
+
+<div class="why-factor">
+<span>🌡️ Maximum Temperature</span>
+<strong id="modalTemperature">-</strong>
+</div>
+
+<div class="why-factor">
+<span>💧 Humidity</span>
+<strong id="modalHumidity">-</strong>
+</div>
+
+<div class="why-factor">
+<span>🔥 Heat Stress</span>
+<strong id="modalWhyStress">-</strong>
+</div>
+
+<div class="why-factor">
+<span>📊 Area Heat Sensitivity</span>
+<strong id="modalWhySensitivity">-</strong>
+</div>
+
+<div class="why-factor">
+<span>📈 Expected Demand Increase</span>
+<strong id="modalWhyIncrease">-</strong>
+</div>
+
+</div>
+
+
+<div class="modal-action">
+
+<strong>🚚 Recommended Action</strong>
+
+<br><br>
+
+<span id="modalAction">-</span>
+
+</div>
+
+</div>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   GLOBAL DATA
+========================================================= */
+
+let predictionResults = [];
+let whatIfResults = [];
+
+
+/* =========================================================
+   ANALYZE
+========================================================= */
+
+async function analyzeDemand(){
+
+const avgTemperature =
+parseFloat(document.getElementById("avg_temperature").value);
+
+const maxTemperature =
+parseFloat(document.getElementById("max_temperature").value);
+
+const humidity =
+parseFloat(document.getElementById("humidity").value);
+
+const rainfall =
+parseFloat(document.getElementById("rainfall").value);
+
+const month =
+parseInt(document.getElementById("month").value);
+
+if(
+isNaN(avgTemperature) ||
+isNaN(maxTemperature) ||
+isNaN(humidity) ||
+isNaN(rainfall) ||
+isNaN(month)
+){
+alert("Please enter all weather values.");
+return;
+}
+
+const button=document.querySelector(".analyze-btn");
+
+button.textContent="⏳ Analyzing...";
+button.disabled=true;
+
+try{
+
+const response=await fetch("/all_predictions",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+avg_temperature:avgTemperature,
+max_temperature:maxTemperature,
+humidity:humidity,
+rainfall:rainfall,
+month:month
+})
+});
+
+if(!response.ok)
+throw new Error("Prediction server error");
+
+const data=await response.json();
+
+if(Array.isArray(data))
+predictionResults=data;
+
+else if(Array.isArray(data.results))
+predictionResults=data.results;
+
+else if(Array.isArray(data.predictions))
+predictionResults=data.predictions;
+
+else
+throw new Error("No prediction results received.");
+
+if(predictionResults.length===0)
+throw new Error("No areas were returned.");
+
+document.getElementById("resultsSection").style.display="block";
+
+updateSummary(predictionResults);
+createRiskMap(predictionResults);
+createPriorityList(predictionResults);
+createAreaCards(predictionResults);
+
+document.getElementById("tankerResult").style.display="none";
+document.getElementById("whatifResult").style.display="none";
+
+window.scrollTo({
+top:document.getElementById("resultsSection").offsetTop-20,
+behavior:"smooth"
+});
+
+}
+catch(error){
+
+console.error(error);
+
+alert(
+"Unable to get predictions. Make sure Flask is running with: py app.py"
+);
+
+}
+finally{
+
+button.textContent="🔍 Analyze Water Demand Risk";
+button.disabled=false;
+
+}
+
+}
+
+
+/* =========================================================
+   WHAT IF
+========================================================= */
+
+async function compareWhatIfScenario(){
+
+if(predictionResults.length===0){
+
+alert("Please analyze the current weather scenario first.");
+return;
+
+}
+
+const avgTemperature=
+parseFloat(document.getElementById("avg_temperature").value);
+
+const month=
+parseInt(document.getElementById("month").value);
+
+const whatIfMaxTemperature=
+parseFloat(document.getElementById("whatif_max_temperature").value);
+
+const whatIfHumidity=
+parseFloat(document.getElementById("whatif_humidity").value);
+
+const whatIfRainfall=
+parseFloat(document.getElementById("whatif_rainfall").value);
+
+if(
+isNaN(avgTemperature) ||
+isNaN(month) ||
+isNaN(whatIfMaxTemperature) ||
+isNaN(whatIfHumidity) ||
+isNaN(whatIfRainfall)
+){
+
+alert("Please enter all What-If weather values.");
+return;
+
+}
+
+const button=document.getElementById("whatifButton");
+
+button.textContent="⏳ Comparing scenarios...";
+button.disabled=true;
+
+try{
+
+const response=await fetch("/all_predictions",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+
+avg_temperature:avgTemperature,
+
+max_temperature:whatIfMaxTemperature,
+
+humidity:whatIfHumidity,
+
+rainfall:whatIfRainfall,
+
+month:month
+
+})
+});
+
+if(!response.ok)
+throw new Error("What-If prediction server error");
+
+const data=await response.json();
+
+if(Array.isArray(data))
+whatIfResults=data;
+
+else if(Array.isArray(data.results))
+whatIfResults=data.results;
+
+else if(Array.isArray(data.predictions))
+whatIfResults=data.predictions;
+
+else
+throw new Error("No What-If results received.");
+
+if(whatIfResults.length===0)
+throw new Error("No What-If areas were returned.");
+
+showWhatIfComparison(
+predictionResults,
+whatIfResults
+);
+
+}
+catch(error){
+
+console.error(error);
+
+alert(
+"Unable to compare scenarios. Make sure Flask is running with: py app.py"
+);
+
+}
+finally{
+
+button.textContent="🔮 Compare What-If Scenario";
+button.disabled=false;
+
+}
+
+}
+
+
+/* =========================================================
+   WHAT IF COMPARISON
+========================================================= */
+
+function showWhatIfComparison(currentResults,alternateResults){
+
+const currentCounts=getRiskCounts(currentResults);
+const alternateCounts=getRiskCounts(alternateResults);
+
+document.getElementById("currentHigh").textContent=currentCounts.high;
+document.getElementById("currentMedium").textContent=currentCounts.medium;
+document.getElementById("currentLow").textContent=currentCounts.low;
+
+document.getElementById("whatifHigh").textContent=alternateCounts.high;
+document.getElementById("whatifMedium").textContent=alternateCounts.medium;
+document.getElementById("whatifLow").textContent=alternateCounts.low;
+
+const currentMax=
+parseFloat(document.getElementById("max_temperature").value);
+
+const currentHumidity=
+parseFloat(document.getElementById("humidity").value);
+
+const currentRainfall=
+parseFloat(document.getElementById("rainfall").value);
+
+const alternateMax=
+parseFloat(document.getElementById("whatif_max_temperature").value);
+
+const alternateHumidity=
+parseFloat(document.getElementById("whatif_humidity").value);
+
+const alternateRainfall=
+parseFloat(document.getElementById("whatif_rainfall").value);
+
+document.getElementById("currentScenarioWeather").textContent=
+currentMax+"°C max • "+
+currentHumidity+"% humidity • "+
+currentRainfall+" mm rain";
+
+document.getElementById("whatifScenarioWeather").textContent=
+alternateMax+"°C max • "+
+alternateHumidity+"% humidity • "+
+alternateRainfall+" mm rain";
+
+const highChange=
+alternateCounts.high-currentCounts.high;
+
+const mediumChange=
+alternateCounts.medium-currentCounts.medium;
+
+const lowChange=
+alternateCounts.low-currentCounts.low;
+
+let message="";
+
+if(highChange>0){
+
+message+=
+`<span class="change-positive">
+🔴 High-risk areas increase by ${highChange}.
+</span> `;
+
+}
+else if(highChange<0){
+
+message+=
+`<span class="change-negative">
+🔴 High-risk areas decrease by ${Math.abs(highChange)}.
+</span> `;
+
+}
+else{
+
+message+=
+`<span class="change-neutral">
+🔴 High-risk area count remains unchanged.
+</span> `;
+
+}
+
+if(mediumChange>0)
+message+=`Medium-risk areas increase by ${mediumChange}. `;
+
+else if(mediumChange<0)
+message+=`Medium-risk areas decrease by ${Math.abs(mediumChange)}. `;
+
+if(lowChange>0)
+message+=`Low-risk areas increase by ${lowChange}.`;
+
+else if(lowChange<0)
+message+=`Low-risk areas decrease by ${Math.abs(lowChange)}.`;
+
+if(highChange>0){
+
+message+=
+" This scenario suggests greater pressure on water supply and may require additional tanker or drinking-water-station preparation.";
+
+}
+else if(highChange<0){
+
+message+=
+" This scenario suggests lower overall high-risk pressure compared with the current forecast.";
+
+}
+else{
+
+message+=
+" The overall high-risk count is unchanged between the two scenarios.";
+
+}
+
+document.getElementById("whatifChangeText").innerHTML=message;
+
+document.getElementById("whatifResult").style.display="block";
+
+document.getElementById("whatifResult").scrollIntoView({
+behavior:"smooth",
+block:"start"
+});
+
+}
+
+
+/* =========================================================
+   RISK COUNTS
+========================================================= */
+
+function getRiskCounts(results){
+
+let high=0;
+let medium=0;
+let low=0;
+
+results.forEach(result=>{
+
+const risk=String(result.risk||"").toUpperCase();
+
+if(risk==="HIGH") high++;
+else if(risk==="MEDIUM") medium++;
+else low++;
+
+});
+
+return{high,medium,low};
+
+}
+
+
+/* =========================================================
+   SUMMARY
+========================================================= */
+
+function updateSummary(results){
+
+const counts=getRiskCounts(results);
+
+document.getElementById("totalAreas").textContent=results.length;
+document.getElementById("highRiskCount").textContent=counts.high;
+document.getElementById("mediumRiskCount").textContent=counts.medium;
+document.getElementById("lowRiskCount").textContent=counts.low;
+
+}
+
+
+/* =========================================================
+   RISK MAP
+========================================================= */
+
+function createRiskMap(results){
+
+const grid=document.getElementById("riskGrid");
+
+grid.innerHTML="";
+
+const weight={
+HIGH:3,
+MEDIUM:2,
+LOW:1
+};
+
+const sorted=[...results].sort((a,b)=>{
+
+const riskA=
+weight[String(a.risk||"").toUpperCase()]||0;
+
+const riskB=
+weight[String(b.risk||"").toUpperCase()]||0;
+
+if(riskA!==riskB)
+return riskB-riskA;
+
+return getIncrease(b)-getIncrease(a);
+
+});
+
+sorted.slice(0,64).forEach(result=>{
+
+const cell=document.createElement("div");
+
+const risk=String(result.risk||"LOW").toUpperCase();
+
+cell.className="risk-cell "+getRiskClass(risk);
+
+cell.textContent=
+result.section||
+result.area||
+"Unknown";
+
+cell.title="Click to view details";
+
+cell.onclick=()=>{
+showAreaDetails(result);
+};
+
+grid.appendChild(cell);
+
+});
+
+}
+
+
+/* =========================================================
+   AREA CARDS
+========================================================= */
+
+function createAreaCards(results){
+
+const grid=document.getElementById("areaGrid");
+
+grid.innerHTML="";
+
+results.forEach(result=>{
+
+const card=document.createElement("div");
+
+card.className="area-card";
+
+card.onclick=()=>{
+showAreaDetails(result);
+};
+
+const risk=String(result.risk||"LOW").toUpperCase();
+
+const area=
+result.section||
+result.area||
+"Unknown Area";
+
+card.innerHTML=`
+
+<div class="area-card-header">
+
+<div class="area-name">
+${escapeHtml(area)}
+</div>
+
+<span class="risk-badge ${getBadgeClass(risk)}">
+${escapeHtml(risk)}
+</span>
+
+</div>
+
+<div class="area-metric">
+
+<span>Current Demand</span>
+
+<strong>
+${formatNumber(getCurrentDemand(result))}
+</strong>
+
+</div>
+
+<div class="area-metric">
+
+<span>Predicted Demand</span>
+
+<strong>
+${formatNumber(getPredictedDemand(result))}
+</strong>
+
+</div>
+
+<div class="area-metric">
+
+<span>Expected Increase</span>
+
+<strong>
+${getIncrease(result).toFixed(2)}%
+</strong>
+
+</div>
+
+`;
+
+grid.appendChild(card);
+
+});
+
+}
+
+
+/* =========================================================
+   PRIORITY
+========================================================= */
+
+function createPriorityList(results){
+
+const list=document.getElementById("priorityList");
+
+list.innerHTML="";
+
+const priority=[...results]
+.filter(result=>{
+
+const risk=String(result.risk||"").toUpperCase();
+
+return risk==="HIGH"||risk==="MEDIUM";
+
+})
+.sort((a,b)=>getIncrease(b)-getIncrease(a))
+.slice(0,10);
+
+if(priority.length===0){
+
+list.innerHTML=
+"<p>No high or medium-risk areas detected.</p>";
+
+return;
+
+}
+
+priority.forEach(result=>{
+
+const item=document.createElement("div");
+
+item.className="priority-item";
+
+const area=
+result.section||
+result.area||
+"Unknown";
+
+const risk=
+String(result.risk||"").toUpperCase();
+
+item.innerHTML=`
+
+<div>
+
+<div class="priority-name">
+${escapeHtml(area)}
+</div>
+
+<small>${escapeHtml(risk)} risk</small>
+
+</div>
+
+<div class="priority-increase">
++${getIncrease(result).toFixed(2)}%
+</div>
+
+`;
+
+item.onclick=()=>{
+showAreaDetails(result);
+};
+
+list.appendChild(item);
+
+});
+
+}
+
+
+/* =========================================================
+   TANKER ALLOCATION
+========================================================= */
+
+function allocateTankers(){
+
+if(predictionResults.length===0){
+
+alert("Please analyze the weather scenario first.");
+return;
+
+}
+
+let tankerCount=
+parseInt(document.getElementById("tankerCount").value);
+
+if(isNaN(tankerCount)||tankerCount<1){
+
+alert("Please enter a valid number of tankers.");
+return;
+
+}
+
+let candidates=[...predictionResults].filter(result=>{
+
+const risk=String(result.risk||"").toUpperCase();
+
+return risk==="HIGH"||risk==="MEDIUM";
+
+});
+
+if(candidates.length===0)
+candidates=[...predictionResults];
+
+const riskWeight={
+HIGH:3,
+MEDIUM:2,
+LOW:1
+};
+
+candidates.sort((a,b)=>{
+
+const riskA=
+String(a.risk||"LOW").toUpperCase();
+
+const riskB=
+String(b.risk||"LOW").toUpperCase();
+
+const scoreA=
+(riskWeight[riskA]||1)*getIncrease(a);
+
+const scoreB=
+(riskWeight[riskB]||1)*getIncrease(b);
+
+return scoreB-scoreA;
+
+});
+
+const allocations=candidates.map(result=>({
+result:result,
+tankers:0
+}));
+
+let remaining=tankerCount;
+
+for(
+let i=0;
+i<allocations.length&&remaining>0;
+i++
+){
+
+allocations[i].tankers+=1;
+remaining--;
+
+}
+
+let index=0;
+
+while(
+remaining>0&&
+allocations.length>0
+){
+
+allocations[index%allocations.length].tankers+=1;
+
+remaining--;
+index++;
+
+}
+
+const used=
+allocations.filter(item=>item.tankers>0);
+
+const tableBody=
+document.getElementById("tankerTableBody");
+
+tableBody.innerHTML="";
+
+used.forEach((item,index)=>{
+
+const result=item.result;
+
+const risk=
+String(result.risk||"LOW").toUpperCase();
+
+const area=
+result.section||
+result.area||
+"Unknown";
+
+const row=document.createElement("tr");
+
+row.innerHTML=`
+
+<td>#${index+1}</td>
+
+<td>
+<strong>${escapeHtml(area)}</strong>
+</td>
+
+<td class="${getTableRiskClass(risk)}">
+${escapeHtml(risk)}
+</td>
+
+<td>
++${getIncrease(result).toFixed(2)}%
+</td>
+
+<td class="tanker-count">
+${item.tankers}
+</td>
+
+`;
+
+tableBody.appendChild(row);
+
+});
+
+const allocated=
+used.reduce(
+(total,item)=>total+item.tankers,
+0
+);
+
+document.getElementById(
+"availableTankerSummary"
+).textContent=tankerCount;
+
+document.getElementById(
+"prioritizedAreaSummary"
+).textContent=used.length;
+
+document.getElementById(
+"allocatedTankerSummary"
+).textContent=allocated;
+
+document.getElementById("tankerResult").style.display="block";
+
+document.getElementById("tankerResult").scrollIntoView({
+behavior:"smooth",
+block:"start"
+});
+
+}
+
+
+/* =========================================================
+   AREA DETAILS
+========================================================= */
+
+function showAreaDetails(result){
+
+const area=
+result.section||
+result.area||
+"Unknown Area";
+
+const risk=
+String(result.risk||"LOW").toUpperCase();
+
+const current=getCurrentDemand(result);
+const predicted=getPredictedDemand(result);
+const increase=getIncrease(result);
+const stress=getHeatStress(result);
+const sensitivity=getSensitivity(result);
+
+const maxTemperature=
+parseFloat(
+document.getElementById("max_temperature").value
+);
+
+const humidity=
+parseFloat(
+document.getElementById("humidity").value
+);
+
+document.getElementById("modalTitle").textContent=area;
+document.getElementById("modalRisk").textContent=risk;
+document.getElementById("modalCurrent").textContent=formatNumber(current);
+document.getElementById("modalPredicted").textContent=formatNumber(predicted);
+document.getElementById("modalIncrease").textContent=increase.toFixed(2)+"%";
+document.getElementById("modalStress").textContent=stress.toFixed(2);
+document.getElementById("modalSensitivity").textContent=sensitivity.toFixed(3);
+
+document.getElementById("modalWhyRisk").textContent=risk;
+
+document.getElementById("modalTemperature").textContent=
+maxTemperature+"°C";
+
+document.getElementById("modalHumidity").textContent=
+humidity+"%";
+
+document.getElementById("modalWhyStress").textContent=
+stress.toFixed(2);
+
+document.getElementById("modalWhySensitivity").textContent=
+sensitivity.toFixed(3);
+
+document.getElementById("modalWhyIncrease").textContent=
+increase.toFixed(2)+"%";
+
+let whyText=
+"The forecast conditions create water-demand pressure in this area.";
+
+if(risk==="HIGH"){
+
+whyText=
+"High heat stress combined with this area's heat sensitivity produces a significant predicted increase in water demand.";
+
+}
+else if(risk==="MEDIUM"){
+
+whyText=
+"The forecast heat conditions create moderate demand pressure, so additional water supply preparation is recommended.";
+
+}
+else{
+
+whyText=
+"The forecast conditions produce relatively low demand pressure, so normal monitoring is sufficient.";
+
+}
+
+document.getElementById("modalWhyText").textContent=whyText;
+
+let action=
+result.recommended_action||
+result.action;
+
+if(!action){
+
+if(risk==="HIGH"){
+
+action=
+"Pre-position water tankers and temporary drinking-water stations.";
+
+}
+else if(risk==="MEDIUM"){
+
+action=
+"Prepare additional water supply and monitor demand closely.";
+
+}
+else{
+
+action=
+"Normal water supply is expected. Continue monitoring.";
+
+}
+
+}
+
+document.getElementById("modalAction").textContent=action;
+
+document.getElementById("areaModal").style.display="flex";
+
+}
+
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+function closeModal(){
+
+document.getElementById("areaModal").style.display="none";
+
+}
+
+function closeModalOutside(event){
+
+if(event.target.id==="areaModal")
+closeModal();
+
+}
+
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+function getCurrentDemand(result){
+
+return Number(
+result.current_demand ??
+result.currentDemand ??
+result.demand ??
+0
+);
+
+}
+
+function getPredictedDemand(result){
+
+return Number(
+result.predicted_demand ??
+result.predictedDemand ??
+result.predicted ??
+0
+);
+
+}
+
+function getIncrease(result){
+
+const value=
+result.increase ??
+result.expected_increase ??
+result.expectedIncrease ??
+result.increase_percent ??
+result.percentage_increase ??
+0;
+
+return Number(value)||0;
+
+}
+
+function getHeatStress(result){
+
+return Number(
+result.heat_stress ??
+result.heatStress ??
+0
+);
+
+}
+
+function getSensitivity(result){
+
+return Number(
+result.heat_sensitivity ??
+result.heatSensitivity ??
+0
+);
+
+}
+
+function getRiskClass(risk){
+
+if(risk==="HIGH")
+return "risk-high";
+
+if(risk==="MEDIUM")
+return "risk-medium";
+
+return "risk-low";
+
+}
+
+function getBadgeClass(risk){
+
+if(risk==="HIGH")
+return "badge-high";
+
+if(risk==="MEDIUM")
+return "badge-medium";
+
+return "badge-low";
+
+}
+
+function getTableRiskClass(risk){
+
+if(risk==="HIGH")
+return "table-high";
+
+if(risk==="MEDIUM")
+return "table-medium";
+
+return "table-low";
+
+}
+
+function formatNumber(number){
+
+number=Number(number)||0;
+
+return number.toLocaleString(
+"en-IN",
+{
+maximumFractionDigits:0
+}
+);
+
+}
+
+function escapeHtml(value){
+
+return String(value)
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
+
+}
+
+
+/* =========================================================
+   ESCAPE KEY
+========================================================= */
+
+document.addEventListener(
+"keydown",
+function(event){
+
+if(event.key==="Escape")
+closeModal();
+
+}
+);
+
+</script>
+
+</body>
+</html>
